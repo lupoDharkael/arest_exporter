@@ -18,12 +18,19 @@
 package main
 
 import (
+	"bytes"
 	"encoding/csv"
+	"encoding/json"
 	"flag"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var (
@@ -34,21 +41,45 @@ var (
 	targets = flag.String("config.targets", "", "Sets the scraping targets.")
 )
 
-type Variable struct {
-	Name  string
-	Value string
+var variable = prometheus.NewGaugeVec(
+	prometheus.GaugeOpts{
+		Name: "arest_variable",
+		Help: "arest variable.",
+	},
+	[]string{"name", "hardware"},
+)
+
+func init() {
+	// Register the vector with Prometheus's default registry.
+	prometheus.MustRegister(variable)
 }
 
+// Query is the type which receives the content of an http query
 type Query struct {
-	Variables Variable `json:"variables"`
-	Connected bool     `json:"connected"`
-	Hardware  string   `json:"hardware"`
+	Variables map[string]float64 `json:"variables"`
+	Hardware  string             `json:"hardware"`
+	//Connected bool               `json:"connected"`
 }
 
 var targetsList []string
 
+// ScrapeIP starts scrapping a device
 func ScrapeIP(ip string) {
-
+	var q *Query
+	for _ = range time.NewTicker(time.Second * 3).C {
+		data, err := http.Get("http://" + ip)
+		if err == nil && data.StatusCode >= 200 && data.StatusCode < 300 {
+			buf := new(bytes.Buffer)
+			buf.ReadFrom(data.Body)
+			json.Unmarshal(buf.Bytes(), &q)
+			// update the exported values
+			for name, value := range q.Variables {
+				variable.WithLabelValues(name, q.Hardware).Set(value)
+			}
+		} else {
+			// something went wrong
+		}
+	}
 }
 
 func main() {
@@ -84,6 +115,7 @@ func main() {
 	for _, ip := range targetsList {
 		go ScrapeIP(ip)
 	}
-	// infinite wait
-	select {}
+
+	http.Handle("/metrics", promhttp.Handler())
+	log.Fatal(http.ListenAndServe(*listenAddress, nil))
 }
