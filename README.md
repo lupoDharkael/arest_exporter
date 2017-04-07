@@ -1,9 +1,11 @@
 # aREST exporter
-Exporter which retrieves stats from [aREST](https://github.com/marcoschwartz/aREST) and exports them via HTTP for Prometheus consumption
+Exporter which retrieves stats from [aREST](https://github.com/marcoschwartz/aREST) and exports them via HTTP for Prometheus consumption.
+
+In the actual version it only exports the variables (name and value) and the hardware of the target.
 
 ## Getting Started
 
-- To run it:
+To run it:
 
 ```bash
 ./arest_exporter [flags]
@@ -19,12 +21,16 @@ File:
 ```bash
 ./arest_exporter -config.file="path/to/file.csv" [flags]
 ```
-If you define both (from file and from tags), the file will overwrite the configuration.
 
-- Help on flags:
+Help on flags:
 
 ```bash
-./arest_exporter --help
+./arest_exporter --help`
+```
+
+### General information
+- Default listen address :9009
+- If you define both (from file and from tags), the file will overwrite the configuration.
 
 ## TODO
 - Implement loging with Logrus
