@@ -68,6 +68,7 @@ func ScrapeIP(ip string) {
 	var q *Query
 	for _ = range time.NewTicker(time.Second * 5).C {
 		data, err := http.Get("http://" + ip)
+		// check success
 		if err == nil && data.StatusCode >= 200 && data.StatusCode < 300 {
 			buf := new(bytes.Buffer)
 			buf.ReadFrom(data.Body)
@@ -84,7 +85,6 @@ func ScrapeIP(ip string) {
 
 func main() {
 	flag.Parse()
-	log.Infoln("Listening on ", *listenAddress)
 
 	// get the targets
 	switch {
@@ -120,5 +120,7 @@ func main() {
 	}
 
 	http.Handle("/metrics", promhttp.Handler())
+
+	log.Infoln("Listening on ", *listenAddress)
 	log.Fatal(http.ListenAndServe(*listenAddress, nil))
 }
