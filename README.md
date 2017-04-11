@@ -31,8 +31,3 @@ Help on flags:
 ### General information
 - Default listen address :9009
 - If you define both (from file and from tags), the file will overwrite the configuration.
-
-## TODO
-- Implement loging with Logrus
-- Improve help format
-- General clean up

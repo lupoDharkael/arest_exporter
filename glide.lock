@@ -1,5 +1,5 @@
-hash: db95ad0e4c8c36554772f72d661901252948cb742574fa031c4db9f2ce8b7f08
-updated: 2017-04-06T22:20:25.936487675+02:00
+hash: 4de075c1dbe3c37c860c8cbd2dc3fe29613d070a822d679cde001a67596206b7
+updated: 2017-04-11T12:03:51.730125035+02:00
 imports:
 - name: github.com/beorn7/perks
   version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
@@ -17,6 +17,7 @@ imports:
   version: c5b7fccd204277076155f10851dad72b76a49317
   subpackages:
   - prometheus
+  - prometheus/promhttp
 - name: github.com/prometheus/client_model
   version: 6f3806018612930941127f2a7c6c453ba2c527d2
   subpackages:
@@ -26,9 +27,19 @@ imports:
   subpackages:
   - expfmt
   - internal/bitbucket.org/ww/goautoneg
+  - log
   - model
 - name: github.com/prometheus/procfs
   version: a1dba9ce8baed984a2495b658c82687f8157b98f
   subpackages:
   - xfs
+- name: github.com/Sirupsen/logrus
+  version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
+- name: golang.org/x/sys
+  version: f3918c30c5c2cb527c0b071a27c35120a6c0719a
+  subpackages:
+  - unix
+  - windows
+  - windows/registry
+  - windows/svc/eventlog
 testImports: []

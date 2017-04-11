@@ -22,7 +22,6 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"flag"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -31,6 +30,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/prometheus/common/log"
 )
 
 var (
@@ -43,7 +43,7 @@ var (
 
 var variable = prometheus.NewGaugeVec(
 	prometheus.GaugeOpts{
-		Name: "arest_variable",
+		Name: "arest_variable_total",
 		Help: "arest variable.",
 	},
 	[]string{"name", "hardware"},
@@ -66,7 +66,7 @@ var targetsList []string
 // ScrapeIP starts scrapping a device
 func ScrapeIP(ip string) {
 	var q *Query
-	for _ = range time.NewTicker(time.Second * 3).C {
+	for _ = range time.NewTicker(time.Second * 5).C {
 		data, err := http.Get("http://" + ip)
 		if err == nil && data.StatusCode >= 200 && data.StatusCode < 300 {
 			buf := new(bytes.Buffer)
@@ -84,10 +84,13 @@ func ScrapeIP(ip string) {
 
 func main() {
 	flag.Parse()
+	log.Infoln("Listening on ", *listenAddress)
+
 	// get the targets
 	switch {
 	case *configFile == "" && *targets == "":
 		log.Fatalln("No targets found")
+
 	case *configFile != "":
 		f, err := os.Open(*configFile)
 		if err != nil {
